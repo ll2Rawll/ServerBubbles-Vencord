@@ -34,7 +34,7 @@ Shared looks work with BetterDiscord's version 1 look format. Copy, download or 
 The screenshots use sample servers in a local preview.
 
 ![Server bubbles](previews/bubbles.png)
-![Customization studio](previews/studio.png)
+![Customization studio](previews/studio-full.png)
 
 ## Development
 

@@ -99,7 +99,20 @@ try {
     assert.deepEqual(await page.evaluate(() => testRuntime.preferences().favorites), ["101"]);
     await page.click("#settings .sb-settings-button");
     await page.waitForSelector(".sb-studio");
-    await (await page.$(".sb-studio")).screenshot({ path: resolve(root, "test-results/studio.png") });
+    const viewport = page.viewport();
+    const studioHeight = await page.$eval(".sb-studio", element => Math.ceil(element.getBoundingClientRect().height));
+    await page.setViewport({ ...viewport, height: studioHeight + 200 });
+    try {
+        await page.$eval(".test-modal", element => { element.scrollTop = 0; });
+        await page.waitForFunction(() => {
+            const panel = document.querySelector(".sb-studio").getBoundingClientRect();
+            const modal = document.querySelector(".test-modal").getBoundingClientRect();
+            return panel.top >= modal.top && panel.bottom <= modal.bottom;
+        });
+        await (await page.$(".sb-studio")).screenshot({ path: resolve(root, "test-results/studio.png") });
+    } finally {
+        await page.setViewport(viewport);
+    }
 
     await page.evaluate(() => { plugin.stop(); testRuntime.holdReads = true; plugin.start(); });
     await page.waitForFunction(() => testRuntime.pendingReads.length === 1);
